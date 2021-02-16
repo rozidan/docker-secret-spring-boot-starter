@@ -1,0 +1,16 @@
+### Eclipse ###
+.classpath
+.project
+.settings
+### IntelliJ ###
+.idea
+### vscode ###
+.vscode
+### Gradle ###
+.gradle
+### Build Folders ###
+build
+bin
+out
+### PaaS Gradle Plugin ###
+dependencies_scripts

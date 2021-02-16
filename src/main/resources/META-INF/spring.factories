@@ -1,0 +1,2 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.github.rozidan.springboot.dockersecret.DockerSecretsPostProcessor

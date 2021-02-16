@@ -1,0 +1,185 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java-library'
+    id "com.github.spotbugs" version "4.6.0"
+    id 'maven-publish'
+    id 'signing'
+    id 'jacoco'
+    id 'com.github.hierynomus.license' version '0.15.0'
+    id 'net.researchgate.release' version '2.8.1'
+    id 'com.github.kt3k.coveralls' version '2.10.2'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1'
+
+    implementation 'org.springframework:spring-beans'
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
+    implementation 'org.apache.commons:commons-lang3'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation "org.slf4j:slf4j-api"
+
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+springBoot {
+    buildInfo()
+}
+
+bootJar.enabled = false
+jar.enabled = true
+
+tasks.withType(Jar) {
+    manifest {
+        attributes 'Implementation-Title': project.name,
+                'Implementation-Version': project.version
+    }
+    from(rootProject.projectDir) {
+        include 'LICENSE'
+        into 'META-INF'
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.fork = true
+    options.incremental = true
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom {
+                name = 'Springboot Docker Secret Starter'
+                description = project.description
+                url = 'https://github.com/rozidan/docker-secret-spring-boot-starter.git'
+
+                organization {
+                    name = 'Idan Rozenfeld'
+                    url = 'https://github.com/rozidan'
+                }
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'rozidan'
+                        name = 'Idan Roz'
+                        email = 'rozidan@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/rozidan/docker-secret-spring-boot-starter.git'
+                    developerConnection = 'scm:git:https://github.com/rozidan/docker-secret-spring-boot-starter.git'
+                    url = 'https://github.com/rozidan/docker-secret-spring-boot-starter.git'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = version.endsWith('SNAPSHOT') ? mavenSnapshotsUrl : mavenReleasesUrl
+
+            credentials {
+                username mavenUsername
+                password mavenPassword
+            }
+        }
+    }
+}
+
+tasks.withType(Sign) {
+    onlyIf {
+        !version.endsWith('SNAPSHOT')
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+spotbugs {
+    ignoreFailures = true
+    showStackTraces = true
+    showProgress = true
+    effort = 'max'
+    reportLevel = 'low'
+}
+
+spotbugsMain {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+spotbugsTest {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+license {
+    header rootProject.file('codequality/HEADER')
+    strictCheck = true
+    skipExistingHeaders = false
+    include "**/*.java"
+
+    ext.name = 'Idan Roz'
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+}
+
+release {
+    tagTemplate = '${version}'
+    git {
+        requireBranch = 'master'
+        pushToRemote = 'origin'
+    }
+}
+
+afterReleaseBuild.dependsOn uploadArchives

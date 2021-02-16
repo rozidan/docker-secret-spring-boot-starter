@@ -1,0 +1,12 @@
+language: java
+
+dist: "trusty"
+
+jdk:
+  - oraclejdk8
+
+before_install:
+  - chmod +x gradlew
+
+after_success:
+  - ./gradlew jacocoTestReport coveralls
