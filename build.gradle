@@ -73,7 +73,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            from components.java
+            artifact jar
             artifact sourcesJar
             artifact javadocJar
 

@@ -72,9 +72,16 @@ Example for system folder:
 secrets.path=file:/run/secrets/*
 ```
 
-> **NOTE:** The default path for Docker secrets is "/run/secrets/*"
+> **NOTE:** The default path for Docker secrets is "/run/secrets/*",
 <br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
-> and it's the default path in case 'secrets.path' is not defined
+> and it is the default path in case 'secrets.path' is not defined
+
+### The property source
+A new property source (PropertiesPropertySource) will be created with a name as follows:<br>
+```text
+"Container secrets converted to properties via location '[the secrets path]' with '[full class name of the EnvironmentPostProcessor]'"
+```
+and this is how it will showed with the actuator endpoints.
 
 ### Docker container configuration
 
@@ -82,7 +89,7 @@ Example for a secret config within Docker compose:
 
 ```yaml
 secrets:
-   - source: mariadb-pass
+   - source: database-pass
      target: spring.my.database.pass
 ```      
 
