@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
@@ -49,11 +50,9 @@ public class DockerSecretsPostProcessor implements EnvironmentPostProcessor {
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        String secretPath = System.getProperty(SECRETS_PATH_PROPERTY);
-        secretPath = Objects.nonNull(secretPath) ? secretPath : System.getenv(SECRETS_PATH_PROPERTY);
-        if (Objects.isNull(secretPath)) {
-            secretPath = SECRETS_PATH_DEFAULT;
-        }
+        String secretPath = ObjectUtils.getFirstNonNull(() -> System.getenv(SECRETS_PATH_PROPERTY),
+                () -> System.getProperty(SECRETS_PATH_PROPERTY),
+                () -> SECRETS_PATH_DEFAULT);
 
         try {
             loadSecrets(environment, application, secretPath);
