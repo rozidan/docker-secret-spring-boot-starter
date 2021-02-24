@@ -12,8 +12,7 @@
 
 ## Features
 
-Register the docker-secret starter to your Spring Boot application and reads docker container secrets content to spring
-properties before it is starting up
+Register the docker-secret starter to your Spring Boot application and reads docker container secrets content to spring properties before it is starting up
 
 ## Setup
 
@@ -41,24 +40,21 @@ repositories {
 }
 ```
 
-### How it works?
+### How does it work?
 
-The docker-secrets starter reads the secrets before the application is starting up and adds/overrides spring properties
-with their content according to the file names.
-<br>
-For example, in case there is a secret called "spring.my.prop", the property "my.prop" will be added or overrode and its
-content will be the secret file content.
+According to the file names, the docker-secrets starter reads the secrets before the application starts up and adds/overrides spring properties with their content.
+For example, if there is a secret called "spring.my.prop", the property "my.prop" will be added or overrode, and its content will be the secret file content
 
 ### Which secrets are going to be Spring property?
 
-There are 2 different prefixes for secrets that will be converted to Spring properties:
+There are two different prefixes for secrets that will convert to Spring properties:
 
 * "spring.*" - the property content will be exactly as secret content.
 * "spring64.*" - the property content will be base64 decoded.
 
-### From which folder will the secrets be extracted?
+### From which folder will include the extraction of the secrets?
 
-The secrets' folder path is represented by a system property/env called "secrets.path".
+The property/env called "secrets.path" allocates folder path.
 
 Example for classpath folder:
 
@@ -79,7 +75,7 @@ secrets.path=file:/run/secrets/*
 ### The property source
 A new property source (PropertiesPropertySource) will be created with a name as follows:<br>
 ```text
-"Container secrets converted to properties via location '[the secrets path]' with '[full class name of the EnvironmentPostProcessor]'"
+"Container secrets converted to properties via location '[the path of the secrets]' with '[full class name of the EnvironmentPostProcessor]'"
 ```
 and this is how it will showed with the actuator endpoints.
 
